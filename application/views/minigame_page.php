@@ -7,6 +7,7 @@
 	<script type="text/javascript" src="<?php echo '/application/public/js/jquery.js'?>"></script>
 	<script type="text/javascript" src="<?php echo '/application/public/js/jquery.form.js'?>"></script>
 	<script type="text/javascript" src="<?php echo '/application/public/js/minigame.js'?>"></script>
+	<link rel="stylesheet" href="<?php echo '/application/public/css/style.css'?>">
 </head>
 <body>
 

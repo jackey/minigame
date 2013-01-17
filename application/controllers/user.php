@@ -47,23 +47,33 @@ class User extends CI_Controller {
 			$this->output->set_output(json_encode($data));
 		}
 		else {
-			$query = $this->db->get_where('user', array('name' => $this->input->post('name')));
-			$user = array_shift($query->result());
-			if ($user && $user->pass == md5($this->input->post('pass'))) {
-				// Store into session.
-				$this->init_user_session($user);
+			$authcode = $this->input->post('authcode');
+			if ($authcode != $this->session->userdata('authcode')) {
 				$data = array(
-					'success' => 1,
-					'message' => '登录成功'
+					'success' => 0,
+					'message' => '验证码错误'
 				);
 				$this->output->set_output(json_encode($data));
 			}
 			else {
-				$data = array(
-					'success' => 0,
-					'message' => '用户不存在或者密码错误'
-				);
-				$this->output->set_output(json_encode($data));
+				$query = $this->db->get_where('user', array('name' => $this->input->post('name')));
+				$user = array_shift($query->result());
+				if ($user && $user->pass == md5($this->input->post('pass'))) {
+					// Store into session.
+					$this->init_user_session($user);
+					$data = array(
+						'success' => 1,
+						'message' => '登录成功'
+					);
+					$this->output->set_output(json_encode($data));
+				}
+				else {
+					$data = array(
+						'success' => 0,
+						'message' => '用户不存在或者密码错误'
+					);
+					$this->output->set_output(json_encode($data));
+				}
 			}
 		}
 
@@ -227,7 +237,7 @@ class User extends CI_Controller {
 		$query = $this->db->get_where('user_game', array('uid' => $uid, 'gid' => $gid))->result();
 		$user_game = array_shift($query);
 
-		if ($user_game->finished != 0) {
+		if ($user_game && $user_game->finished != 0) {
 			$this->output->set_output(json_encode(array('success' => 1, 'message' => '')));
 		}
 		else {
@@ -248,7 +258,7 @@ class User extends CI_Controller {
 	    }
 	   //4位验证码也可以用rand(1000,9999)直接生成
 	   //将生成的验证码写入session，备验证页面使用
-	    $_SESSION["Checknum"] = $num;
+	    $this->session->set_userdata("authcode", $num);
 	   //创建图片，定义颜色值
 	    Header("Content-type: image/PNG");
 	    srand((double)microtime()*1000000);
@@ -275,9 +285,9 @@ class User extends CI_Controller {
 	    //将四个数字随机显示在画布上,字符的水平间距和位置都按一定波动范围随机生成
 	    $strx=rand(3,8);
 	    for($i=0;$i<4;$i++){
-	    $strpos=rand(1,6);
-	    imagestring($im,5,$strx,$strpos, substr($num,$i,1), $black);
-	    $strx+=rand(8,12);
+		    $strpos=rand(1,6);
+		    imagestring($im,5,$strx,$strpos, substr($num,$i,1), $black);
+		    $strx+=rand(8,12);
 	    }
 	    ImagePNG($im);
 	    ImageDestroy($im);

@@ -20,6 +20,7 @@
 			<?php echo form_password('pass')?>
 		</div>
 		<div>
+			<?php echo form_input('authcode')?>
 			<a href=""><img src="<?php echo site_url().'/user/authcode'?>" /></a>
 		</div>
 		<div>
