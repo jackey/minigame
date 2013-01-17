@@ -40,6 +40,7 @@
 
 $route['default_controller'] = "welcome";
 $route['user'] = 'user';
+$route['game'] = 'game';
 $route['404_override'] = '';
 
 

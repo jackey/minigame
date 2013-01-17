@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Welcome to CodeIgniter</title>
+	<title>Welcome to Mini Game</title>
 </head>
 <body>
 
 <div id="container">
-	mini game
+	Access Deny
 </div>
 
 </body>

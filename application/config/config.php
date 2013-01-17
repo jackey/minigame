@@ -360,3 +360,14 @@ $config['proxy_ips'] = '';
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
+
+$config['sess_use_database'] = TRUE;
+$config['sess_table_name'] = 'ci_sessions';
+
+$config['smtp'] = array(
+    'protocol' => 'smtp',
+    'smtp_host' => 'ssl://smtp.gmail.com',
+    'smtp_port' => 465,
+    'smtp_user' => 'minigamedevjackey@gmail.com',
+    'smtp_pass' => 'abcdefg0987',
+);
