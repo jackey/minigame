@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS  `user` (
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Whether the user is active(1) or blocked(0).',
   `real_name` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'True name of user.',
   `delivery_address` varchar(200) NOT NULL DEFAULT '0' COMMENT '.',
+  `weibo_screen_name` varchar(200) NOT NULL DEFAULT '0' COMMENT '.',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `name` (`name`),
   KEY `access` (`access`),

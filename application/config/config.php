@@ -371,3 +371,13 @@ $config['smtp'] = array(
     'smtp_user' => 'minigamedevjackey@gmail.com',
     'smtp_pass' => 'abcdefg0987',
 );
+
+$config['wb_akey'] = '1522524724';
+$config['wb_skey'] = '3b53836d69058abca2435bf751867f80';
+$config['wb_callback_url'] = 'http://minigame.local/user/weibo_callback';
+
+$config['admin_users_name'] = array(
+	'admin',
+	'jackey',
+	'tony'
+);

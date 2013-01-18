@@ -16,22 +16,35 @@ class Game extends CI_Controller {
 
 	public function manage() {
 		//管理员帐号在这里配置
-		$admin_users_name = array(
-			'admin',
-			'jackey',
-			'tony'
-		);
-
+		$admin_users_name = $this->config->item('admin_users_name');
 		if ($user = $this->_is_login()) {
 			if (in_array($user->name, $admin_users_name)) {
 				//TODO:
+				$query = $this->db->get_where("user_game");
+				$view_data = array(
+					'total' => $query->num_rows(),
+					'rows' => $query->result()
+				);
+				foreach ($view_data['rows'] as $key => $row) {
+					$user = array_shift($this->db->get_where('user', array('uid' => $row->uid))->result());
+					$view_data['rows'][$key]->user = $user;
+					$shared_status = json_decode($row->shared_status, TRUE);
+					if (empty($shared_status['shared_mail'])) {
+						$shared_status['shared_mail'] = array();
+					}
+					if (empty($shared_status['shared_social'])) {
+						$shared_status['shared_social'] = array();
+					}
+					$view_data['rows'][$key]->shared_status = $shared_status;
+				}
+				$this->load->view('game_manage', $view_data);
 			}
 			else {
-				$this->view->load('access_deny');
+				$this->load->view('access_deny');
 			}
 		}
 		else {
-			//TODO:
+			redirect('user/login_form');
 		}
 	}
 

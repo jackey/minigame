@@ -11,7 +11,11 @@
 <body>
 
 <div id="container">
-	<?php echo form_open('/user/register_process', array('id' => 'user_register_form'))?>
+	<?php if ($user->uid):?>
+		<?php echo form_open('/user/register_process', array('id' => 'user_register_form'))?>
+	<?php else: ?>
+		<?php echo form_open('/user/profile_update_process', array('id' => 'user_register_form'))?>
+	<?php endif;?>
 		<div>
 			<?php echo form_label('Login:', 'name', array())?>
 			<?php echo form_input('name')?>
@@ -41,7 +45,15 @@
 			<?php echo form_password('passconf')?>
 		</div>
 		<div>
+			<?php echo form_hidden('uid', $user->uid)?>
+		</div>
+		<div>
+		<?php if ($user->uid):?>
+			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Update Now!'))?>
+		<?php else: ?>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Register Now!'))?>
+		<?php endif;?>
+			
 		</div>
 	<?php echo form_close()?>
 	<?php echo validation_errors();?>

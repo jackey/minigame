@@ -1,5 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/application/libraries/SaeTOAuthV2.php';
+
 class User extends CI_Controller {
 
 	var $max_game_element = 10;
@@ -11,6 +13,10 @@ class User extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->helper('url');
 		$this->load->library('form_validation');
+
+		$this->wb_akey = $this->config->item('wb_akey');
+		$this->wb_skey = $this->config->item('wb_skey');
+		$this->wb_callback_url = $this->config->item('wb_callback_url');
 	}
 
 	public function index()
@@ -149,7 +155,16 @@ class User extends CI_Controller {
 			redirect('user');
 		}
 		else {
-			$this->load->view('user_login_page');
+			$wb_akey = $this->config->item('wb_akey');
+			$wb_skey = $this->config->item('wb_skey');
+			$wb_callback_url = $this->config->item('wb_callback_url');
+
+			$o = new SaeTOAuthV2($wb_akey , $wb_skey);
+			$state = uniqid( 'weibo_', true);	
+			$this->session->set_userdata('weibo_state', $state);
+			$code_url = $o->getAuthorizeURL($wb_callback_url , 'code', $state);
+
+			$this->load->view('user_login_page', array('code_url' => $code_url));
 		}
 	}
 
@@ -306,5 +321,161 @@ class User extends CI_Controller {
 	private function init_user_session($user) {
 		unset($user->delivery_address);
 		$this->session->set_userdata(array('user' => $user));
+	}
+
+	public function weibo_login() {
+		if ($this->_is_login()) {
+			redirect('user');
+			return;
+		}
+		$wb_akey = $this->config->item('wb_akey');
+		$wb_skey = $this->config->item('wb_skey');
+		$wb_callback_url = $this->config->item('wb_callback_url');
+
+		$o = new SaeTOAuthV2($wb_akey , $wb_skey);
+		$state = uniqid( 'weibo_', true);	
+		$this->session->set_userdata('weibo_state', $state);
+		$code_url = $o->getAuthorizeURL($wb_callback_url , 'code', $state);
+
+		$this->load->view('user_weibo_login_page', array('code_url' => $code_url));
+	}
+
+	public function weibo_callback() {
+		$wb_akey = $this->wb_akey;
+		$wb_skey = $this->wb_skey;
+		$wb_callback_url = $this->wb_callback_url;
+
+		$o = new SaeTOAuthV2($wb_akey , $wb_skey);
+		$token = NULL;
+		if ($this->input->get('code')) {
+			$keys = array();
+
+			$state = $this->input->get('state');
+			if ( empty($state) || $state !== $this->session->userdata('weibo_state')) {
+				echo '非法请求！';
+				exit;
+			}
+			$this->session->unset_userdata('weibo_state');
+
+			$keys['code'] = $this->input->get('code');
+			$keys['redirect_uri'] = $wb_callback_url;
+			try {
+				$token = $o->getAccessToken( 'code', $keys );
+			} catch (OAuthException $e) {
+				print_r($e);
+			}
+		}
+		else {
+			//TODO:
+			print("Error when get weibo auth code");
+		}
+
+		if ($token) {
+			$this->session->set_userdata('token', $token);
+			setcookie( 'weibojs_'.$o->client_id, http_build_query($token));
+			$weibo_user = $this->weibo_account();
+			$screen_name = $weibo_user['screen_name'];
+			$query = $this->db->get_where('user', array('weibo_screen_name' => $screen_name));
+			if($query->num_rows()) {
+				$user = array_shift($query->result());
+				$this->session->set_userdata('user', $user);
+				redirect('user');
+			}
+			else {
+				//如果客户之前没有用weibo账户登录过 
+				//我们则先创建一个系统账户，再跳转到注册页面，并且赋一个默认的值.
+				$new_user = array(
+					'name' => $weibo_user['screen_name'],
+					'phone' => '',
+					'pass' => md5(''),
+					'mail' => '',
+					'created' => time(),
+					'access' => time(),
+					'login' => time(),
+					'status' => 1,
+					'real_name' => $weibo_user['screen_name'],
+					'delivery_address' => '',
+					'weibo_screen_name' => $weibo_user['screen_name'],
+				);
+				$this->db->insert('user', $new_user);
+
+				$uid = $this->db->insert_id();
+				$new_user['uid'] = $uid;
+
+				$this->session->set_userdata('user', $new_user);
+
+				redirect('user/profile_update');
+			}
+		}
+	}
+
+	private function weibo_account() {
+		$wb_akey = $this->wb_akey;
+		$wb_skey = $this->wb_skey;
+		$wb_callback_url = $this->wb_callback_url;
+		$token = $this->session->userdata('token');
+
+		$weibo_client = new SaeTClientV2($wb_akey, $wb_skey , $token['access_token']);
+		return $weibo_client->show_user_by_id($token['uid']);
+	}
+
+	public function profile_update() {
+		if (!$user = $this->_is_login()) {
+			redirect('user/login_form');
+		}
+		else {
+			$data = array('user' => (Object)$user);
+			$this->load->view('user_register_page', $data);
+		}
+	}
+
+	public function profile_update_process() {
+		//表单验证规则
+		$this->form_validation->set_error_delimiters("<div class='error'></div>");
+		$this->form_validation->set_rules('name', "User name", 'required|min_length[5]');
+		$this->form_validation->set_rules('mail', "Email Address", 'required|valid_mail');
+		$this->form_validation->set_rules('phone', "User Phone", 'required|min_length[5]');
+		$this->form_validation->set_rules('pass', "Your Password", 'required|min_length[6]');
+		$this->form_validation->set_rules('delivery_address', "Your Delivery Address", 'required');
+		$this->form_validation->set_rules('passconf', "Your Password Confirm", 'required|matches[pass]');
+
+		// $this->output->set_content_type('application/json');
+		// $this->output->set_header('Cache-Control: no-cache, must-revalidate');
+		//验证失败后 继续提示注册
+		if ($this->form_validation->run() === FALSE) {
+			$data = array(
+				'success' => 0,
+				'message' => $this->form_validation->error_string(),
+			);
+			$this->output->set_output(json_encode($data));
+		}
+		//否则进入到游戏界面
+		else {
+			$user = $this->_is_login();
+			$data = array(
+				'success' => 0,
+				'message' => ''
+			);
+			if (!$user) {
+				$data['message'] = "用户非法";
+			}
+			else {
+				$updated_data = array(
+					'name' => $this->input->post('name'),
+					'phone' => $this->input->post('phone'),
+					'pass' => md5($this->input->post('pass')),
+					'mail' => $this->input->post('mail'),
+					'created' => time(),
+					'access' => time(),
+					'login' => time(),
+					'status' => 1,
+					'real_name' => $this->input->post('real_name'),
+					'delivery_address' => $this->input->post('delivery_address'),
+				);
+				$this->db->update('user', $updated_data, array('uid' => $this->input->post('uid')));
+				$data['success'] = 1;
+			}
+			$this->output->set_output(json_encode($data));
+		}
 	}
 }
