@@ -22,9 +22,9 @@ class User extends CI_Controller {
 	public function index()
 	{
 		//1.判断是否登录
-		if ($this->_is_login())	{
+		if ($this->_is_login() || TRUE)	{
 			//1.1已经登录，重定向到minigame 页面
-			redirect('user/minigame');
+			$this->load->view('index');
 		}
 		else {
 			//1.2 没有登录，则重定向到登录页面
@@ -82,7 +82,6 @@ class User extends CI_Controller {
 				}
 			}
 		}
-
 	}
 
 	public function register_process() {
