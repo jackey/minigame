@@ -29,9 +29,23 @@
 				<?php foreach ($rows as $row):?>
 					<tr>
 						<td><?php echo $row->id?></td>
-						<td><?php echo $row->user->name?></td>
-						<td><?php echo $row->started?></td>
-						<td><?php echo $row->finished?></td>
+						<td>
+							<?php echo $row->user->real_name?>
+							<div>
+								<span>电话:</span><span><?php echo $row->user->phone?></span>
+								<span>邮件:</span><span><?php echo $row->user->mail?></span>
+								<span>发货时间:</span><span><?php echo $row->user->delivery_address?></span>
+								<span>微薄:</span><span><?php echo $row->user->weibo_screen_name?></span>
+							</div>
+						</td>
+						<td><?php echo date('Y-m-d h:i' ,$row->started)?></td>
+						<td>
+							<?php if ($row->finished == 0):?>
+								游戏未完成
+							<?php else:?>
+								<?php echo date('Y-m-d h:i:s' ,$row->finished)?>
+							<?php endif;?>
+						</td>
 						<td><?php echo $row->score?>分</td>
 						<td>
 							<div>

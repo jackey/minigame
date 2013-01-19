@@ -20,6 +20,8 @@ class Game extends CI_Controller {
 		if ($user = $this->_is_login()) {
 			if (in_array($user->name, $admin_users_name)) {
 				//TODO:
+				$this->db->order_by('score', "DESC");
+				$this->db->order_by('finished', "DESC");
 				$query = $this->db->get_where("user_game");
 				$view_data = array(
 					'total' => $query->num_rows(),
