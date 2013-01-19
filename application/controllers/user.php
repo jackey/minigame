@@ -25,7 +25,7 @@ class User extends CI_Controller {
 		//1.判断是否登录
 		if ($user = $this->_is_login())	{
 			$data += array(
-				'user' => $user,
+				'user' => (object)$user,
 				'game' => (object)$this->new_game(),
 				'max_game_element' => $this->max_game_element
 			);
@@ -151,7 +151,7 @@ class User extends CI_Controller {
 					$this->output->set_output(json_encode($data));
 				}
 				else {
-					$this->db->insert('user', array(
+					$user = array(
 						'name' => $this->input->post('name'),
 						'phone' => $this->input->post('phone'),
 						'pass' => md5($this->input->post('pass')),
@@ -162,12 +162,18 @@ class User extends CI_Controller {
 						'status' => 1,
 						'real_name' => $this->input->post('real_name'),
 						'delivery_address' => $this->input->post('delivery_address'),
-					));
+					);
+					$this->db->insert('user', $user);
+
+					$uid = $this->db->insert_id();
+					$user['uid'] = $uid;
 
 					$data = array(
 						'success' => 1,
 						'message' => ''
 					);
+					//把当前注册的用户加入session 实现自动登录
+					$this->session->set_userdata('user', (object)$user);
 					$this->output->set_output(json_encode($data));
 				}
 			}
