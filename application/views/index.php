@@ -12,14 +12,14 @@
 <body>
 
 <div id="container">
-	<div id="minigame_section_container"></div>
 	<?php if (isset($user)):?>
 		<?php echo form_open('/user/minigame_process', array('id' => 'user_submit_game_form'))?>
 			<?php echo form_hidden('uid', $user->uid)?>
 			<?php echo form_hidden('gid', $game->gid)?>
 			<?php echo form_hidden('max_game_element', $max_game_element)?>
 		<?php echo form_close()?>
-		
+
+		<div id="minigame_section_container"></div>
 		<div id="game_share_form_container">
 			<div>
 				<a href="javascript:void(0)" id="social_brand">QQ</a>

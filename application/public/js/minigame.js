@@ -1,6 +1,11 @@
 (function($) {
 	$(document).ready(function () {
-
+		//验证码刷新
+		$('img.fresh_authcode').click(function () {
+			var src = $(this).attr('src');
+			var base_url = src.substring(0, src.indexOf('?'));
+			$(this).attr('src', base_url + "?" +new Date().getTime());
+		});	
 		// Register form
 		$('#user_register_form').ajaxForm({
 			success: function (responseText, statusText, xhr, $form) {
@@ -60,28 +65,28 @@
 		init_minigame("minigame_section_container");
 	});
 
-		if (!Array.prototype.indexOf)
-		{
-		  Array.prototype.indexOf = function(elt /*, from*/)
-		  {
-		    var len = this.length;
+	if (!Array.prototype.indexOf)
+	{
+	  Array.prototype.indexOf = function(elt /*, from*/)
+	  {
+	    var len = this.length;
 
-		    var from = Number(arguments[1]) || 0;
-		    from = (from < 0)
-		         ? Math.ceil(from)
-		         : Math.floor(from);
-		    if (from < 0)
-		      from += len;
+	    var from = Number(arguments[1]) || 0;
+	    from = (from < 0)
+	         ? Math.ceil(from)
+	         : Math.floor(from);
+	    if (from < 0)
+	      from += len;
 
-		    for (; from < len; from++)
-		    {
-		      if (from in this &&
-		          this[from] === elt)
-		        return from;
-		    }
-		    return -1;
-		  };
-		}
+	    for (; from < len; from++)
+	    {
+	      if (from in this &&
+	          this[from] === elt)
+	        return from;
+	    }
+	    return -1;
+	  };
+	}
 
 	function init_minigame(container_id) {
 		var container = $('#' + container_id);
@@ -168,5 +173,6 @@
 			if (options.unclicked) options.unclicked($(this));
 		});
 	}
-})(jQuery);
 
+
+})(jQuery);

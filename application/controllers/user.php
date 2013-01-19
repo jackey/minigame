@@ -23,10 +23,11 @@ class User extends CI_Controller {
 	{
 		$data = array();
 		//1.判断是否登录
-		if ($user = $this->_is_login() || TRUE)	{
+		if ($user = $this->_is_login())	{
 			$data += array(
 				'user' => $user,
-				'game' => $this->new_game()
+				'game' => (object)$this->new_game(),
+				'max_game_element' => $this->max_game_element
 			);
 		}
 		$this->load->view('index', $data);
@@ -49,7 +50,7 @@ class User extends CI_Controller {
 
 	public function register() {
 		if ($this->_is_login()) {
-			redirect('user/minigame');
+			redirect('user');
 		}
 		else {
 			$this->load->view('user_register_page');
@@ -121,44 +122,54 @@ class User extends CI_Controller {
 		}
 		//否则进入到游戏界面
 		else {
-			//进入之前，先返回前端，然后保存提交的新用户
-			$this->load->model('user');
-			$query_name = $this->db->get_where('user', array('name' => $this->input->post('name')));
-			$query_mail = $this->db->get_where('user', array('mail' => $this->input->post('mail')));
-			
-			if ($query_name->num_rows() > 0) {
+			$authcode = $this->input->post('authcode');
+			if ($authcode != $this->session->userdata('authcode')) {
 				$data = array(
 					'success' => 0,
-					'message' => '用户名被占用',
-				);
-				$this->output->set_output(json_encode($data));
-			}
-			else if ($query_mail->num_rows() > 0) {
-				$data = array(
-					'success' => 0,
-					'message' => '邮件被占用',
+					'message' => '验证码错误'
 				);
 				$this->output->set_output(json_encode($data));
 			}
 			else {
-				$this->db->insert('user', array(
-					'name' => $this->input->post('name'),
-					'phone' => $this->input->post('phone'),
-					'pass' => md5($this->input->post('pass')),
-					'mail' => $this->input->post('mail'),
-					'created' => time(),
-					'access' => time(),
-					'login' => time(),
-					'status' => 1,
-					'real_name' => $this->input->post('real_name'),
-					'delivery_address' => $this->input->post('delivery_address'),
-				));
+				//进入之前，先返回前端，然后保存提交的新用户
+				$this->load->model('user');
+				$query_name = $this->db->get_where('user', array('name' => $this->input->post('name')));
+				$query_mail = $this->db->get_where('user', array('mail' => $this->input->post('mail')));
+				
+				if ($query_name->num_rows() > 0) {
+					$data = array(
+						'success' => 0,
+						'message' => '用户名被占用',
+					);
+					$this->output->set_output(json_encode($data));
+				}
+				else if ($query_mail->num_rows() > 0) {
+					$data = array(
+						'success' => 0,
+						'message' => '邮件被占用',
+					);
+					$this->output->set_output(json_encode($data));
+				}
+				else {
+					$this->db->insert('user', array(
+						'name' => $this->input->post('name'),
+						'phone' => $this->input->post('phone'),
+						'pass' => md5($this->input->post('pass')),
+						'mail' => $this->input->post('mail'),
+						'created' => time(),
+						'access' => time(),
+						'login' => time(),
+						'status' => 1,
+						'real_name' => $this->input->post('real_name'),
+						'delivery_address' => $this->input->post('delivery_address'),
+					));
 
-				$data = array(
-					'success' => 1,
-					'message' => ''
-				);
-				$this->output->set_output(json_encode($data));
+					$data = array(
+						'success' => 1,
+						'message' => ''
+					);
+					$this->output->set_output(json_encode($data));
+				}
 			}
 		}
 	}
@@ -409,6 +420,7 @@ class User extends CI_Controller {
 
 				$this->session->set_userdata('user', $new_user);
 
+				//用户第一次微薄登录后 调转到用户详情编辑页面
 				redirect('user/profile_update');
 			}
 		}

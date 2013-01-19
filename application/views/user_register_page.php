@@ -11,7 +11,7 @@
 <body>
 
 <div id="container">
-	<?php if ($user->uid):?>
+	<?php if (!@$user->uid):?>
 		<?php echo form_open('/user/register_process', array('id' => 'user_register_form'))?>
 	<?php else: ?>
 		<?php echo form_open('/user/profile_update_process', array('id' => 'user_register_form'))?>
@@ -45,19 +45,21 @@
 			<?php echo form_password('passconf')?>
 		</div>
 		<div>
-			<?php echo form_hidden('uid', $user->uid)?>
+			<?php echo form_hidden('uid', @$user->uid)?>
 		</div>
 		<div>
-		<?php if ($user->uid):?>
+		<?php if (@$user->uid):?>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Update Now!'))?>
 		<?php else: ?>
+			<div>
+				<?php echo form_input('authcode')?>
+				<img class="fresh_authcode" src="<?php echo site_url().'/user/authcode?'.time()?>" />
+			</div>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Register Now!'))?>
 		<?php endif;?>
-			
 		</div>
 	<?php echo form_close()?>
 	<?php echo validation_errors();?>
-
 	<div>
 		<a href="<?php echo site_url().'/user/register'?>">注册</a>
 	</div>
