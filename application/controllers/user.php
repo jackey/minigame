@@ -21,15 +21,30 @@ class User extends CI_Controller {
 
 	public function index()
 	{
+		$data = array();
 		//1.判断是否登录
-		if ($this->_is_login() || TRUE)	{
-			//1.1已经登录，重定向到minigame 页面
-			$this->load->view('index');
+		if ($user = $this->_is_login() || TRUE)	{
+			$data += array(
+				'user' => $user,
+				'game' => $this->new_game()
+			);
 		}
-		else {
-			//1.2 没有登录，则重定向到登录页面
-			redirect('user/login_form');
-		}
+		$this->load->view('index', $data);
+	}
+
+	private function new_game() {
+		// 开始游戏前 先在数据库生成一个游戏记录
+		$new_game = array(
+			'name' => uniqid(),
+			'uuid' => uniqid(),
+			'created' => time(),
+			'access' => time(),
+		);
+		$this->db->insert('game', $new_game);
+		$gid = $this->db->insert_id();
+		$new_game['gid'] = $gid;
+
+		return $new_game;
 	}
 
 	public function register() {
@@ -169,15 +184,7 @@ class User extends CI_Controller {
 	public function minigame() {
 		if ($this->_is_login()) {
 			// 开始游戏前 先在数据库生成一个游戏记录
-			$new_game = array(
-				'name' => uniqid(),
-				'uuid' => uniqid(),
-				'created' => time(),
-				'access' => time(),
-			);
-			$this->db->insert('game', $new_game);
-			$gid = $this->db->insert_id();
-			$new_game['gid'] = $gid;
+			$new_game = $this->new_game();
 			$user = $this->_is_login();
 			$this->load->view('minigame_page', array('user' => $user, 
 				'game' => (object)$new_game, 

@@ -19,41 +19,40 @@
 			<?php echo form_hidden('gid', $game->gid)?>
 			<?php echo form_hidden('max_game_element', $max_game_element)?>
 		<?php echo form_close()?>
-	<?php endif;?>
-
-	<div id="game_share_form_container">
-		<div>
-			<a href="javascript:void(0)" id="social_brand">QQ</a>
-			<a href="sina">Sina</a>
-			<a href="kaixin">Kaixin</a>
-			<a href="renren">Renren</a>
+		
+		<div id="game_share_form_container">
+			<div>
+				<a href="javascript:void(0)" id="social_brand">QQ</a>
+				<a href="sina">Sina</a>
+				<a href="kaixin">Kaixin</a>
+				<a href="renren">Renren</a>
+			</div>
+			<?php echo form_open('/game/game_email_share', array('id' => 'user_game_share_result', 'style' => 'display:block'))?>
+				<div>
+					<?php echo form_label('Email User 1:', 'user_1', array())?>
+					<?php echo form_input('user_1')?>
+				</div>
+				<div>
+					<?php echo form_label('Email User 2:', 'user_2', array())?>
+					<?php echo form_input('user_2')?>
+				</div>
+				<div>
+					<?php echo form_label('Email User 3:', 'user_3', array())?>
+					<?php echo form_input('user_3')?>
+				</div>
+				<div>
+					<?php echo form_label('Email User 4:', 'user_4', array())?>
+					<?php echo form_input('user_4')?>
+				</div>
+				<div>
+					<?php echo form_hidden('gid', $game->gid)?>
+				</div>
+				<div>
+					<?php echo form_button("share", 'Share', array('id' => 'user_game_share_result_submit'))?>
+				</div>
+			<?php echo form_close()?>
 		</div>
-		<?php echo form_open('/game/game_email_share', array('id' => 'user_game_share_result', 'style' => 'display:block'))?>
-			<div>
-				<?php echo form_label('Email User 1:', 'user_1', array())?>
-				<?php echo form_input('user_1')?>
-			</div>
-			<div>
-				<?php echo form_label('Email User 2:', 'user_2', array())?>
-				<?php echo form_input('user_2')?>
-			</div>
-			<div>
-				<?php echo form_label('Email User 3:', 'user_3', array())?>
-				<?php echo form_input('user_3')?>
-			</div>
-			<div>
-				<?php echo form_label('Email User 4:', 'user_4', array())?>
-				<?php echo form_input('user_4')?>
-			</div>
-			<div>
-				<?php if (isset($user)):?><?php echo form_hidden('gid', $game->gid)?><?php endif;?>
-			</div>
-			<div>
-				<?php echo form_button("share", 'Share', array('id' => 'user_game_share_result_submit'))?>
-			</div>
-		<?php echo form_close()?>
-	</div>
+	<?php endif;?>
 </div>
-<div><a href="<?php echo base_url().'user/logout'?>">Logout</a></div>
 </body>
 </html>
