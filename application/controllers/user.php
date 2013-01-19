@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/application/libraries/SaeTOAuthV2.php';
+require_once APPPATH.'/libraries/SaeTOAuthV2.php';
 
 class User extends CI_Controller {
 
@@ -147,7 +147,6 @@ class User extends CI_Controller {
 				$this->output->set_output(json_encode($data));
 			}
 		}
-
 	}
 
 	public function login_form() {
