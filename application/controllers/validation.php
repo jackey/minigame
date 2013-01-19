@@ -43,4 +43,20 @@ class Validation extends CI_Controller {
 		}
 		$this->output->set_output(json_encode($data));
 	}
+
+	public function is_valid_phone() {
+		$phone = $this->input->post('phone');
+		$query = $this->db->get_where('user', array('phone' => $phone));
+		$data = array(
+			'success' => 0,
+			'message' => '',
+		);
+		if ($query->num_rows() > 0) {
+			$data['message'] = "电话号码已经被占用";
+		}
+		else {
+			$data['success'] = 1;
+		}
+		$this->output->set_output(json_encode($data));
+	}
 }
