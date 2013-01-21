@@ -59,4 +59,20 @@ class Validation extends CI_Controller {
 		}
 		$this->output->set_output(json_encode($data));
 	}
+
+	public function is_valid_authcode() {
+		$post_authcode = $this->input->post('authcode');
+		$authcode = $this->session->userdata('authcode');
+		$data = array(
+			'success' => 0,
+			'message' => ''
+		);
+		if ($post_authcode == $authcode) {
+			$data['success'] = 1;
+		}
+		else {
+			$data['success'] = 0;
+		}
+		$this->output->set_output(json_encode($data));
+	}
 }

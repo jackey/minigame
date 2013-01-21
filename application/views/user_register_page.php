@@ -48,6 +48,10 @@
 			<?php echo form_hidden('uid', @$user->uid)?>
 		</div>
 		<div>
+			<?php echo form_label('关注我们微薄', 'create_friends')?>
+			<?php echo form_checkbox('create_friends', 'accept', TRUE);?>
+		</div>
+		<div>
 		<?php if (@$user->uid):?>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Update Now!'))?>
 		<?php else: ?>

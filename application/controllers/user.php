@@ -375,16 +375,17 @@ class User extends CI_Controller {
 			$state = $this->input->get('state');
 			if ( empty($state) || $state !== $this->session->userdata('weibo_state')) {
 				echo '非法请求！';
-				exit;
 			}
-			$this->session->unset_userdata('weibo_state');
+			else {
+				$this->session->unset_userdata('weibo_state');
 
-			$keys['code'] = $this->input->get('code');
-			$keys['redirect_uri'] = $wb_callback_url;
-			try {
-				$token = $o->getAccessToken( 'code', $keys );
-			} catch (OAuthException $e) {
-				print_r($e);
+				$keys['code'] = $this->input->get('code');
+				$keys['redirect_uri'] = $wb_callback_url;
+				try {
+					$token = $o->getAccessToken( 'code', $keys );
+				} catch (OAuthException $e) {
+					print_r($e);
+				}
 			}
 		}
 		else {
@@ -452,6 +453,18 @@ class User extends CI_Controller {
 		}
 	}
 
+	public function weibo_create_friend() {
+		$our_weibo_uid = "2890812010";
+
+		// Instance weibo client.
+		$wb_akey = $this->wb_akey;
+		$wb_skey = $this->wb_skey;
+		$token = $this->session->userdata('token');
+		$weibo_client = new SaeTClientV2($wb_akey, $wb_skey , $token['access_token']);
+
+		return $weibo_client->follow_by_id($our_weibo_uid);
+	}
+
 	public function profile_update_process() {
 		//表单验证规则
 		$this->form_validation->set_error_delimiters("<div class='error'></div>");
@@ -461,6 +474,12 @@ class User extends CI_Controller {
 		$this->form_validation->set_rules('pass', "Your Password", 'required|min_length[6]');
 		$this->form_validation->set_rules('delivery_address', "Your Delivery Address", 'required');
 		$this->form_validation->set_rules('passconf', "Your Password Confirm", 'required|matches[pass]');
+		$create_friends = $this->input->post('create_friends');
+
+		//如果客户允许关注weibo
+		if ($create_friends == 'accept') {
+			$ret = $this->weibo_create_friend();
+		}		
 
 		// $this->output->set_content_type('application/json');
 		// $this->output->set_header('Cache-Control: no-cache, must-revalidate');
