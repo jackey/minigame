@@ -362,6 +362,61 @@ class User extends CI_Controller {
 		$this->load->view('user_weibo_login_page', array('code_url' => $code_url));
 	}
 
+	public function get_auth_token() {
+		$wb_akey = $this->wb_akey;
+		$wb_skey = $this->wb_skey;
+		$wb_callback_url = $this->wb_callback_url;
+		$data = array(
+			'success' => 0,
+			'message' => '',
+			'data' => array()
+		);
+
+		$o = new SaeTOAuthV2($wb_akey , $wb_skey);
+		$token = NULL;
+		if ($this->input->get('code')) {
+			$keys['code'] = $this->input->get('code');
+			$keys['redirect_uri'] = $wb_callback_url;
+			try {
+				$token = $o->getAccessToken('code', $keys);
+				$data['success'] = 1;
+				$data['data'] = array('token' => $token);
+
+				$this->set_userdata('token', $token);
+
+				$this->output->set_output(json_encode($data));
+			} catch (OAuthException $e) {
+				$data['message'] = $e->getMessage();
+			}
+		}
+	}
+
+	public function get_logined_weibo_user() {
+		$token = $this->input->post('access_token');
+		$uid = $this->input->post('weibo_uid');
+		$wb_akey = $this->wb_akey;
+		$wb_skey = $this->wb_skey;
+
+		$weibo_client = new SaeTClientV2($wb_akey, $wb_skey , $access_token);
+		$this->output->set_output(json_encode($weibo_client->show_user_by_id($uid)));
+	}
+
+	public function weibo_user_is_registered() {
+		$weibo_screen_name = $this->input->post('weibo_screen_name');
+		$data = array(
+			'success' => 0,
+			'message' => ''
+		);
+		if($query->num_rows()) {
+			$data['success'] = 1;
+		}
+		else {
+			$data['success'] = 0;
+		}
+
+		$this->output->set_output(json_decode($data));
+	}
+
 	public function weibo_callback() {
 		$wb_akey = $this->wb_akey;
 		$wb_skey = $this->wb_skey;
@@ -464,6 +519,8 @@ class User extends CI_Controller {
 
 		return $weibo_client->follow_by_id($our_weibo_uid);
 	}
+
+
 
 	public function profile_update_process() {
 		//表单验证规则
