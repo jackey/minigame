@@ -401,8 +401,37 @@ class User extends CI_Controller {
 		$this->output->set_output(json_encode($weibo_client->show_user_by_id($uid)));
 	}
 
+	public function weibo_user_profile_is_updated() {
+		$weibo_screen_name = $this->input->post('weibo_screen_name');
+		$query = $this->db->get_where('user', array('weibo_screen_name' => $weibo_screen_name));
+		$data = array(
+			'success' => 0,
+			'message' => ''
+		);
+		if($query->num_rows()) {
+			$data['success'] = 1;
+		}
+		else {
+			$data['success'] = 0;
+		}
+
+		//如果success == 1 说明用户已经存在数据库 但是可能没有更新数据
+		if ($data['success'] == 1) {
+			$user = array_shift($query->result);
+			//如果必填字段都存在，则说明已经注册完成了
+			if ($user->name && $user->phone && $user->pass && $user->mail && $user->delivery_address) {
+				// TODO:
+			}
+			else {
+				$data['success'] = 0;
+			}
+		}
+		$this->output->set_output(json_decode($data));
+	}
+
 	public function weibo_user_is_registered() {
 		$weibo_screen_name = $this->input->post('weibo_screen_name');
+		$query = $this->db->get_where('user', array('weibo_screen_name' => $weibo_screen_name));
 		$data = array(
 			'success' => 0,
 			'message' => ''
