@@ -17,6 +17,7 @@
 			<?php echo form_hidden('uid', $user->uid)?>
 			<?php echo form_hidden('gid', $game->gid)?>
 			<?php echo form_hidden('max_game_element', $max_game_element)?>
+			<?php echo form_hidden('weibo_user_profile_is_updated', $weibo_user_profile_is_updated)?>
 		<?php echo form_close()?>
 
 		<div id="minigame_section_container"></div>

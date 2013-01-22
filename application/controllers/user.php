@@ -30,6 +30,81 @@ class User extends CI_Controller {
 				'max_game_element' => $this->max_game_element
 			);
 		}
+		//如果是weibo 用户验证后的callback
+		else if ($this->input->get('code')) {
+			$wb_akey = $this->wb_akey;
+			$wb_skey = $this->wb_skey;
+			$wb_callback_url = $this->wb_callback_url;
+			$tmp_user = NULL;
+
+			$o = new SaeTOAuthV2($wb_akey , $wb_skey);
+			$token = NULL;
+			$keys = array();
+
+			$state = $this->input->get('state');
+			if ( empty($state) || $state !== $this->session->userdata('weibo_state')) {
+				echo '非法请求！';
+			}
+			else {
+				$this->session->unset_userdata('weibo_state');
+
+				$keys['code'] = $this->input->get('code');
+				$keys['redirect_uri'] = $wb_callback_url;
+				try {
+					$token = $o->getAccessToken( 'code', $keys );
+				} catch (OAuthException $e) {
+					print_r($e);
+				}
+			}
+
+			if ($token) {
+				$this->session->set_userdata('token', $token);
+				setcookie( 'weibojs_'.$o->client_id, http_build_query($token));
+				$weibo_user = $this->weibo_account();
+				$screen_name = $weibo_user['screen_name'];
+				$query = $this->db->get_where('user', array('weibo_screen_name' => $screen_name));
+				if($query->num_rows()) {
+					$user = array_shift($query->result());
+					$tmp_user = $user;
+					$this->session->set_userdata('user', $user);
+				}
+				else {
+					//如果客户之前没有用weibo账户登录过 
+					//我们则先创建一个系统账户，再跳转到注册页面，并且赋一个默认的值.
+					$new_user = array(
+						'name' => $weibo_user['screen_name'],
+						'phone' => '',
+						'pass' => md5(''),
+						'mail' => '',
+						'created' => time(),
+						'access' => time(),
+						'login' => time(),
+						'status' => 1,
+						'real_name' => $weibo_user['screen_name'],
+						'delivery_address' => '',
+						'weibo_screen_name' => $weibo_user['screen_name'],
+					);
+					$this->db->insert('user', $new_user);
+					$uid = $this->db->insert_id();
+					$new_user['uid'] = $uid;
+					$tmp_user = $new_user;
+					$this->session->set_userdata('user', $new_user);
+
+
+				}
+				//如果必填字段都存在，则说明已经注册完成了
+				if ($user->name && $user->phone && $user->pass && $user->mail && $user->delivery_address) {
+					$data += array(
+						'weibo_user_profile_is_updated' => 1
+					);
+				}
+				else {
+					$data += array(
+						'weibo_user_profile_is_updated' => 0
+					);
+				}
+			}
+		}
 		$this->load->view('index', $data);
 	}
 
@@ -176,6 +251,8 @@ class User extends CI_Controller {
 					$this->session->set_userdata('user', (object)$user);
 					$this->output->set_output(json_encode($data));
 				}
+
+
 			}
 		}
 	}
