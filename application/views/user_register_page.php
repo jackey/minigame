@@ -51,6 +51,10 @@
 			<?php echo form_label('关注我们微薄', 'create_friends')?>
 			<?php echo form_checkbox('create_friends', 'accept', TRUE);?>
 		</div>
+		<?php if (@$user->uid):?><div>
+			<?php  echo form_label('接受我们的newsletter', 'receive_newsletter')?>
+			<?php echo form_checkbox('receive_newsletter', 'accept', TRUE)?>
+		</div><?php endif;?>
 		<div>
 		<?php if (@$user->uid):?>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Update Now!'))?>

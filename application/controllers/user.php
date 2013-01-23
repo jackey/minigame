@@ -89,8 +89,6 @@ class User extends CI_Controller {
 					$new_user['uid'] = $uid;
 					$tmp_user = $new_user;
 					$this->session->set_userdata('user', $new_user);
-
-
 				}
 				//如果必填字段都存在，则说明已经注册完成了
 				if ($user->name && $user->phone && $user->pass && $user->mail && $user->delivery_address) {
@@ -267,7 +265,7 @@ class User extends CI_Controller {
 			$wb_callback_url = $this->config->item('wb_callback_url');
 
 			$o = new SaeTOAuthV2($wb_akey , $wb_skey);
-			$state = uniqid( 'weibo_', true);	
+			$state = uniqid( 'weibo_', true);
 			$this->session->set_userdata('weibo_state', $state);
 			$code_url = $o->getAuthorizeURL($wb_callback_url , 'code', $state);
 
@@ -638,11 +636,12 @@ class User extends CI_Controller {
 		$this->form_validation->set_rules('delivery_address', "Your Delivery Address", 'required');
 		$this->form_validation->set_rules('passconf', "Your Password Confirm", 'required|matches[pass]');
 		$create_friends = $this->input->post('create_friends');
+		$receive_newsletter = $this->input->post('receive_newsletter');
 
 		//如果客户允许关注weibo
 		if ($create_friends == 'accept') {
 			$ret = $this->weibo_create_friend();
-		}		
+		}
 
 		// $this->output->set_content_type('application/json');
 		// $this->output->set_header('Cache-Control: no-cache, must-revalidate');
@@ -676,6 +675,7 @@ class User extends CI_Controller {
 					'status' => 1,
 					'real_name' => $this->input->post('real_name'),
 					'delivery_address' => $this->input->post('delivery_address'),
+					'receive_newsletter' => $receive_newsletter
 				);
 				$this->db->update('user', $updated_data, array('uid' => $this->input->post('uid')));
 				$data['success'] = 1;
