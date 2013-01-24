@@ -278,9 +278,15 @@ class User extends CI_Controller {
 			// 开始游戏前 先在数据库生成一个游戏记录
 			$new_game = $this->new_game();
 			$user = $this->_is_login();
+			$query = $this->db->get_where("user_game", array('uid' => $user->uid));
+			$has_played = 0;
+			if ($query->num_rows() >= 1) {
+				$has_played = 1;
+			}
 			$this->load->view('minigame_page', array('user' => $user, 
 				'game' => (object)$new_game, 
-				'max_game_element' => $this->max_game_element)
+				'max_game_element' => $this->max_game_element,
+				'has_played' => $has_played)
 			);
 		}
 		else {

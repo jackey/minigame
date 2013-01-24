@@ -47,6 +47,9 @@
 				<?php echo form_hidden('gid', $game->gid)?>
 			</div>
 			<div>
+				<?php echo form_hidden('has_played', $has_played)?>
+			</div>
+			<div>
 				<?php echo form_button("share", 'Share', array('id' => 'user_game_share_result_submit'))?>
 			</div>
 		<?php echo form_close()?>
