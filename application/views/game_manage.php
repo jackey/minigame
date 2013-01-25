@@ -66,6 +66,7 @@
 			</tbody>
 		</table>
 	<?php endif;?>
+	<?php print $pager_links ?>
 </div>
 </body>
 </html>

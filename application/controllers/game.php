@@ -19,19 +19,29 @@ class Game extends CI_Controller {
 		$admin_users_name = $this->config->item('admin_users_name');
 		if ($user = $this->_is_login()) {
 			if (in_array($user->name, $admin_users_name)) {
-				//TODO:
-				// $this->db->order_by('score', "DESC");
-				// $this->db->order_by('finished', "DESC");
-				//$query = $this->db->get_where("user_game");
+				$this->load->library('pagination');
+
 				$sql = "SELECT MAX( max_user_game.score ) AS max_score, max_user_game.uid AS max_uid, base_user_game.*";
 				$sql .= " FROM user_game max_user_game ";
 				$sql .= " LEFT JOIN user_game base_user_game ON base_user_game.uid = max_user_game.uid";
 				$sql .= " GROUP BY max_uid ORDER BY base_user_game.started ASC";
+				$page = $this->input->get('page');
+				if (empty($page)) $page = 1;
+				$limit = 10;
+				$offset = $limit * ($page - 1);
+				$sql .= " limit $offset, ".intval(($offset + $limit));
 				$query = $this->db->query($sql);
 				$view_data = array(
 					'total' => $query->num_rows(),
 					'rows' => $query->result()
 				);
+
+				$config['base_url'] = base_url().'/game/manage';
+				$config['total_rows'] = $view_data['total'];
+				$config['per_page'] = 10; 
+				$this->pagination->initialize($config);
+				$view_data['pager_links'] = $this->pagination->create_links();
+
 				foreach ($view_data['rows'] as $key => $row) {
 					$user = array_shift($this->db->get_where('user', array('uid' => $row->uid))->result());
 					$view_data['rows'][$key]->user = $user;
