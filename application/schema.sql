@@ -54,3 +54,10 @@ CREATE TABLE IF NOT EXISTS  `ci_sessions` (
 	KEY `last_activity_idx` (`last_activity`)
 );
 
+
+查询一个用户所玩游戏最高分的记录:
+SELECT MAX( max_user_game.score ) AS max_score, max_user_game.uid AS max_uid, base_user_game. * , user . * 
+FROM user_game max_user_game
+LEFT JOIN user_game base_user_game ON base_user_game.uid = max_user_game.uid
+LEFT JOIN user ON user.uid = base_user_game.uid
+GROUP BY max_uid
