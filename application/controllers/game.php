@@ -20,9 +20,14 @@ class Game extends CI_Controller {
 		if ($user = $this->_is_login()) {
 			if (in_array($user->name, $admin_users_name)) {
 				//TODO:
-				$this->db->order_by('score', "DESC");
-				$this->db->order_by('finished', "DESC");
-				$query = $this->db->get_where("user_game");
+				// $this->db->order_by('score', "DESC");
+				// $this->db->order_by('finished', "DESC");
+				//$query = $this->db->get_where("user_game");
+				$sql = "SELECT MAX( max_user_game.score ) AS max_score, max_user_game.uid AS max_uid, base_user_game.*";
+				$sql .= " FROM user_game max_user_game ";
+				$sql .= " LEFT JOIN user_game base_user_game ON base_user_game.uid = max_user_game.uid";
+				$sql .= " GROUP BY max_uid ORDER BY base_user_game.started ASC";
+				$query = $this->db->query($sql);
 				$view_data = array(
 					'total' => $query->num_rows(),
 					'rows' => $query->result()
