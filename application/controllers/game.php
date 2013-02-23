@@ -28,11 +28,33 @@ class Game extends CI_Controller {
 		if (is_login($this->session)) {
 			$user = current_user($this->session);
 			$game = load_user_game($this->db, $user);
+			if (!$game) {
+				$game = helper_start_game($this->db, $user);
+			}
 			$data['data'] = $game;
+			$data['success'] = 1;
 
 			//更新游戏访问时间
-			update_game_access_time();
+			helper_update_game_access_time($this->db);
 		}
 		$this->output->set_output(json_encode($data));
+	}
+
+	// POST:
+	// {gid => 1, map_id => 1}
+	public function find_one_map() {
+		$data = array(
+			'success' => 0,
+			'message' => '',
+			'data' => array(),
+		);
+		if (is_login($this->session)) {
+			$user = current_user($this->session);
+			$gid = $this->input->get('gid');
+			$map_id = $this->input->get('map_id');
+			helper_update_game_map($this->db, $gid, $map_id);
+			$data['success'] = 1;
+		}
+		return $this->output->set_output(json_encode($data));
 	}
 }

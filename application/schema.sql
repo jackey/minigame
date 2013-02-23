@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS  `user_game` (
   `finished` int(11) NOT NULL DEFAULT '0' COMMENT 'Timestamp for previous time game accessed the site.',
   `score` int(11) NOT NULL DEFAULT '0' COMMENT 'Find out account.',
   `shared_status` varchar(500) NOT NULL DEFAULT '' COMMENT '.',
+  'map' varchar(500) NOT NULL DEFAULT '' COMMENT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_game` (`uid`, `gid`),
   KEY `started` (`started`)
@@ -52,6 +53,14 @@ CREATE TABLE IF NOT EXISTS  `ci_sessions` (
 	user_data text NOT NULL,
 	PRIMARY KEY (session_id),
 	KEY `last_activity_idx` (`last_activity`)
+);
+
+CREATE TABLE IF NOT EXISTS `newsletter` (
+  `id` int(10) unsigned AUTO_INCREMENT,
+  `email` varchar(100) DEFAULT '',
+  `created` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY(`id`),
+  KEY (`created`)
 );
 
 

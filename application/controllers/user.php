@@ -30,7 +30,7 @@ class User extends CI_Controller {
 		if ($user = $this->_is_login())	{
 			$data += array(
 				'user' => (object)$user,
-				'game' => (object)start_game($this->db, current_user($this->session)),
+				'game' => (object)helper_start_game($this->db, current_user($this->session)),
 				'max_game_element' => $this->max_game_element
 			);
 		}
@@ -265,7 +265,7 @@ class User extends CI_Controller {
 	public function minigame() {
 		if ($this->_is_login()) {
 			// 开始游戏前 先在数据库生成一个游戏记录
-			$new_game = start_game();
+			$new_game = helper_start_game();
 			$user = $this->_is_login();
 			$query = $this->db->get_where("user_game", array('uid' => $user->uid));
 			$has_played = 0;
