@@ -63,6 +63,14 @@
 		-webkit-box-shadow: 0 0 8px #D0D0D0;
 	}
 	</style>
+
+	<base href="<?=base_url();?>">
+	<meta charset="utf-8">
+	<title>Welcome to Mini Game</title>
+	<script type="text/javascript" src="<?php echo '/application/public/js/jquery.js'?>"></script>
+	<script type="text/javascript" src="<?php echo '/application/public/js/jquery.form.js'?>"></script>
+	<script type="text/javascript" src="<?php echo '/application/public/js/minigame.js'?>"></script>
+	<link rel="stylesheet" href="<?php echo '/application/public/css/style.css'?>">
 </head>
 <body>
 

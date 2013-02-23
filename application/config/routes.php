@@ -39,14 +39,22 @@
 */
 
 $route['default_controller'] = "welcome";
-$route['10years'] = '10years/welcome';
-$route['10years/user'] = '10years/user';
-$route['10years/game'] = '10years/game';
-$route['10years/validation'] = '10years/validation';
 
 // Default controller
 $route['game'] = 'game';
 $route['404_override'] = '';
+
+// tenyears
+$route['tenyears'] = 'tenyears/welcome';
+$route['tenyears/user'] = 'tenyears/user/index';
+$route['tenyears/game'] = 'tenyears/game';
+$route['tenyears/validation'] = 'tenyears/validation';
+
+// eta
+$route['eta'] = 'eta/welcome/index';
+
+//sensitive
+$route['sensitive'] = 'sensitive/welcome/index';
 
 
 /* End of file routes.php */

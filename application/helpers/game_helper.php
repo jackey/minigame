@@ -57,9 +57,12 @@ if (!function_exists('helper_update_game')) {
 }
 
 if (!function_exists('helper_update_game_access_time')) {
-	function helper_update_game_access_time($db) {
-		$sql = "UPDATE game set access=".time();
-		$db->query($sql);
+	function helper_update_game_access_time($db, $gid) {
+		//$sql = "UPDATE game set access=".time();
+		$data = array(
+			'access' => $gid
+		);
+		$db->update('game', $data, array('gid' => $gid));
 	}
 }
 
@@ -92,9 +95,40 @@ if (!function_exists('helper_update_game_map')) {
 			$data = array(
 				'map' => $map
 			);
-			return $db->update('user_game', $data);
+			return $db->update('user_game', $data, array('gid' => $gid));
 		}
 	}
 }
 
+if (!function_exists('helper_game_is_finished')) {
+	function helper_game_is_finished($db, $gid) {
+		$sql = "SELECT * FROM user_game WHERE gid = {$gid}";
+		$result = $db->query($sql)->result();
+		$user_game = array_shift($result);
+		if ($user_game) {
+			$map = json_decode($user_game->map);
+			$finished = 1;
+			foreach ($map as $m) {
+				if ($m->status == 0) {
+					$finished = 0;
+				}
+				if ($finished == 0) {
+					break;
+				}
+			}
+			return $finished;
+		}
+
+		return FALSE;
+	}
+}
+
+if (!function_exists('helper_update_game_finish_status')) {
+	function helper_update_game_finish_status($db, $gid) {
+		$data = array(
+			'finished' => 1
+		);
+		return $db->update('user_game', $data, array('gid' => $gid));
+	}
+}
 

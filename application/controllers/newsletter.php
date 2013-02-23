@@ -47,8 +47,13 @@ class Newsletter extends CI_Controller {
 			$newsletter = helper_load_newsletter($this->db, $email);
 			if ($newsletter) {
 				$data['success'] = 1;
+				$data['data']['registered'] = 1;
 			}
 		}
 		return $this->output->set_output(json_encode($data));
+	}
+
+	public function index() {
+		$this->load->view('newsletter_form');
 	}
 }

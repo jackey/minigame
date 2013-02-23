@@ -176,3 +176,81 @@
 
 
 })(jQuery);
+
+// newsletter
+(function () {
+	$(document).ready(function () {
+		$('button[name="register_newsletter"]').click(function (event) {
+			var form = $(this).parents('form');
+			var email = $('input[name="email"]', form).val();
+			$.ajax({
+				url: '/newsletter/is_registered',
+				data: {email: email},
+				dataType: 'json',
+				type: "GET",
+				success: function (data) {
+					if (data['data']['registered'] == 1) {
+						alert("对不起，您已经注册了newsletter");
+					}
+					else {
+						$.ajax({
+							url: '/newsletter/register_newsletter',
+							data: {email: email},
+							dataType: 'json',
+							type: 'GET',
+							success: function (data) {
+								if (data['success'] == 1){
+									alert("注册成功");
+								}
+							}
+						});
+					}
+				}
+			});
+		});
+	}); 
+})(jQuery);
+
+// 2, game
+(function ($){
+	$(document).ready(function () {
+		//在任何的页面都需要执行这段js去取出当前用户的游戏数据
+		$.ajax({
+			url: 'game/start_game',
+			dataType: 'json',
+			success: function (data) {
+				//map 就是游戏的数据
+				var map = data['data']['map'];
+
+				render_2_game_map(map, data['data']);
+			}
+		});
+	});
+
+
+	function render_2_game_map(map, game_data) {
+		//TODO:
+	}
+
+	//游戏水滴点击执行的方法
+	// gid 是当前游戏ID, game_data 已经包含了该数据，你可以写入cookie
+	function game_icon_click(gid) {
+		$.ajax({
+			url: 'game/find_one_map',
+			dataType: 'json',
+			success: function (data) {
+
+			}
+		});
+	}
+
+	function game_is_finished(gid) {
+		$.ajax({
+			url: 'game/game_is_finished',
+			dataType: 'json',
+			success: function(data) {
+				
+			}
+		});
+	}
+})(jQuery);

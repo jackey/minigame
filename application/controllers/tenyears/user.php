@@ -14,10 +14,6 @@ class User extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->library('form_validation');
 
-		// custom helper
-		$this->load->helper('game');
-		$this->load->helper('user');
-
 		$this->wb_akey = $this->config->item('wb_akey');
 		$this->wb_skey = $this->config->item('wb_skey');
 		$this->wb_callback_url = $this->config->item('wb_callback_url');
@@ -30,7 +26,7 @@ class User extends CI_Controller {
 		if ($user = $this->_is_login())	{
 			$data += array(
 				'user' => (object)$user,
-				'game' => (object)helper_start_game($this->db, current_user($this->session)),
+				'game' => (object)$this->new_game(),
 				'max_game_element' => $this->max_game_element
 			);
 		}
@@ -107,11 +103,22 @@ class User extends CI_Controller {
 				}
 			}
 		}
-		//如果是一般的访问，就重定向到首页
-		else {
-			redirect('user/login_form');
-		}
 		$this->load->view('index', $data);
+	}
+
+	private function new_game() {
+		// 开始游戏前 先在数据库生成一个游戏记录
+		$new_game = array(
+			'name' => uniqid(),
+			'uuid' => uniqid(),
+			'created' => time(),
+			'access' => time(),
+		);
+		$this->db->insert('game', $new_game);
+		$gid = $this->db->insert_id();
+		$new_game['gid'] = $gid;
+
+		return $new_game;
 	}
 
 	public function register() {
@@ -263,6 +270,96 @@ class User extends CI_Controller {
 			$code_url = $o->getAuthorizeURL($wb_callback_url , 'code', $state);
 
 			$this->load->view('user_login_page', array('code_url' => $code_url));
+		}
+	}
+
+	public function minigame() {
+		if ($this->_is_login()) {
+			// 开始游戏前 先在数据库生成一个游戏记录
+			$new_game = $this->new_game();
+			$user = $this->_is_login();
+			$query = $this->db->get_where("user_game", array('uid' => $user->uid));
+			$has_played = 0;
+			if ($query->num_rows() >= 1) {
+				$has_played = 1;
+			}
+			$this->load->view('tenyears/minigame_page', array('user' => $user, 
+				'game' => (object)$new_game, 
+				'max_game_element' => $this->max_game_element,
+				'has_played' => $has_played)
+			);
+		}
+		else {
+			redirect('user');
+		}
+	}
+
+	public function minigame_process() {
+		$gid = $this->input->post('gid');
+		$uid = $this->input->post('uid');
+		$user = $this->_is_login();
+		$res_data = array(
+			'success' => 0,
+			'message' => ''
+		);
+		if ($user && $user->uid == $uid) {
+			$query_game = $this->db->get_where("game", array('gid' => $gid))->result();
+			$game = array_shift($query_game);
+
+			$query_user_game = $this->db->get_where("user_game", array('gid' => $gid, 'uid' => $uid))->result();
+			if (empty($query_user_game)) {
+				$new_user_game = array(
+					'gid' => $gid,
+					'uid' => $uid,
+					'started' => time(),
+					'score' => 1,
+					'finished' => 0,
+				);
+				$this->db->insert('user_game', $new_user_game);
+				$id = $this->db->insert_id();
+				$res_data['success'] = 1;
+			}
+			else {
+				$user_game = array_shift($query_user_game);
+				$user_game->score += 1;
+				$updated_data = new stdClass;
+				$updated_data->score = $user_game->score; 
+				//游戏已经完成
+				if ($updated_data->score == $this->max_game_element) {
+					$updated_data->finished = time();
+					$res_data['success'] = 1;
+					$res_data['message'] = "游戏过关";
+				}
+				//更新用户找到的图片数目
+				if ($updated_data->score <= $this->max_game_element) {
+					$this->db->set($updated_data);
+					$this->db->where('id', $user_game->id);
+					$this->db->update('user_game');
+
+					$res_data['success'] = 1;
+				}
+
+			}
+		}
+		else {
+			$res_data['message'] = '非法用户';
+		}
+
+		$this->output->set_output(json_encode($res_data));
+	}
+
+	public function user_game_is_finished() {
+		$uid = $this->input->post('uid');
+		$gid = $this->input->post('gid');
+
+		$query = $this->db->get_where('user_game', array('uid' => $uid, 'gid' => $gid))->result();
+		$user_game = array_shift($query);
+
+		if ($user_game && $user_game->finished != 0) {
+			$this->output->set_output(json_encode(array('success' => 1, 'message' => '')));
+		}
+		else {
+			$this->output->set_output(json_encode(array('success' => 0, 'message' => '')));
 		}
 	}
 
