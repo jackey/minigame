@@ -107,6 +107,10 @@ class User extends CI_Controller {
 				}
 			}
 		}
+		//如果是一般的访问，就重定向到首页
+		else {
+			redirect('user/login_form');
+		}
 		$this->load->view('index', $data);
 	}
 
