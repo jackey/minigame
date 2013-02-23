@@ -21,13 +21,13 @@
 		</div>
 		<div>
 			<?php echo form_input('authcode')?>
-			<a href=""><img src="<?php echo site_url().'/user/authcode'?>" /></a>
+			<a href=""><img src="<?php echo '/user/authcode'?>" /></a>
 		</div>
 		<div>
 			<?php echo form_button(array('name' => 'login', 'type' => 'submit', 'content' => 'Login'))?>
 		</div>
 		<div>
-			<a href="<?php echo $code_url?>"><img src="<?php echo base_url().'/application/public/icons/'?>weibo_login.png" title="点击进入授权页面" alt="点击进入授权页面" border="0" /></a>
+			<a href="<?php echo $code_url?>"><img src="<?php echo '/application/public/icons/'?>weibo_login.png" title="点击进入授权页面" alt="点击进入授权页面" border="0" /></a>
 		</div>
 	<?php echo form_close()?>
 	<?php echo validation_errors();?>

@@ -14,6 +14,10 @@ class User extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->library('form_validation');
 
+		// custom helper
+		$this->load->helper('game');
+		$this->load->helper('user');
+
 		$this->wb_akey = $this->config->item('wb_akey');
 		$this->wb_skey = $this->config->item('wb_skey');
 		$this->wb_callback_url = $this->config->item('wb_callback_url');
@@ -26,7 +30,7 @@ class User extends CI_Controller {
 		if ($user = $this->_is_login())	{
 			$data += array(
 				'user' => (object)$user,
-				'game' => (object)$this->new_game(),
+				'game' => (object)start_game($this->db, current_user($this->session)),
 				'max_game_element' => $this->max_game_element
 			);
 		}
@@ -104,21 +108,6 @@ class User extends CI_Controller {
 			}
 		}
 		$this->load->view('index', $data);
-	}
-
-	private function new_game() {
-		// 开始游戏前 先在数据库生成一个游戏记录
-		$new_game = array(
-			'name' => uniqid(),
-			'uuid' => uniqid(),
-			'created' => time(),
-			'access' => time(),
-		);
-		$this->db->insert('game', $new_game);
-		$gid = $this->db->insert_id();
-		$new_game['gid'] = $gid;
-
-		return $new_game;
 	}
 
 	public function register() {
@@ -276,7 +265,7 @@ class User extends CI_Controller {
 	public function minigame() {
 		if ($this->_is_login()) {
 			// 开始游戏前 先在数据库生成一个游戏记录
-			$new_game = $this->new_game();
+			$new_game = start_game();
 			$user = $this->_is_login();
 			$query = $this->db->get_where("user_game", array('uid' => $user->uid));
 			$has_played = 0;

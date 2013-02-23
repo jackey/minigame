@@ -38,10 +38,14 @@
 |
 */
 
-$route['default_controller'] = "user";
-$route['user'] = 'user';
+$route['default_controller'] = "welcome";
+$route['10years'] = '10years/welcome';
+$route['10years/user'] = '10years/user';
+$route['10years/game'] = '10years/game';
+$route['10years/validation'] = '10years/validation';
+
+// Default controller
 $route['game'] = 'game';
-$route['validation'] = 'validation';
 $route['404_override'] = '';
 
 
