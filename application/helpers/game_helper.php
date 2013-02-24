@@ -134,7 +134,6 @@ if (!function_exists('helper_update_game_finish_status')) {
 
 if (!function_exists('helper_user_delete_game')) {
 	function helper_user_delete_game($db, $gid) {
-		print_r('hello');
 		return $db->delete('user_game', array('gid' => $gid));
 	}
 }

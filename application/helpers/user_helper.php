@@ -30,3 +30,12 @@ if (!function_exists('logout')) {
 		$session->sess_destroy();
 	}
 }
+
+if (!function_exists('helper_user_is_palyed_game')) {
+	function helper_user_is_palyed_game($db, $uid){
+		$data = array(
+			'played_game' => 1
+		);
+		$db->update('user', $data, array('uid' => $uid));
+	}
+}

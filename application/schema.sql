@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS  `user` (
   `delivery_address` varchar(200) NOT NULL DEFAULT '0' COMMENT '.',
   `weibo_screen_name` varchar(200) NOT NULL DEFAULT '0' COMMENT '.',
   `receive_newsletter` varchar(1) NOT NULL DEFAULT '0' COMMENT '',
+  `played_game`  int(2) NOT NULL DEFAULT 0 COMMENT '',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `name` (`name`),
   KEY `access` (`access`),

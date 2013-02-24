@@ -84,6 +84,7 @@ class Game extends CI_Controller {
 			if (helper_game_is_finished($this->db, $gid)) {
 				//我们就修改finish状态
 				helper_update_game_finish_status($this->db, $gid);
+				helper_user_is_palyed_game($this->db, $user->uid);
 			}
 		}
 		return $this->output->set_output(json_encode($data));
