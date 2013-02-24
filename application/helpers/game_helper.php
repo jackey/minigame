@@ -70,9 +70,11 @@ if (!function_exists('helper_update_game_access_time')) {
 if (!function_exists('helper_generate_game_map')) {
 	function helper_generate_game_map() {
 		$drips = array();
-		for($i = 0; $i < 11; $i++) {
-			$drips[] = array('pos' => rand(1, 20), 'status' => 0);
+		while (count($drips) > 10) {
+			$drip = array('pos' => rand(1, 20), 'status' => 0);
+			$drips[$drip['pos']] = $drip;
 		}
+		$drips = array_values($drips);
 
 		return $drips;
 	}
