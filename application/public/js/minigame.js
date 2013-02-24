@@ -216,7 +216,7 @@
 	$(document).ready(function () {
 		//在任何的页面都需要执行这段js去取出当前用户的游戏数据
 		$.ajax({
-			url: 'game/start_game',
+			url: '/game/start_game',
 			dataType: 'json',
 			success: function (data) {
 				//map 就是游戏的数据
@@ -236,7 +236,7 @@
 	// gid 是当前游戏ID, game_data 已经包含了该数据，你可以写入cookie
 	function game_icon_click(gid) {
 		$.ajax({
-			url: 'game/find_one_map',
+			url: '/game/find_one_map',
 			dataType: 'json',
 			success: function (data) {
 
@@ -246,7 +246,7 @@
 
 	function game_is_finished(gid) {
 		$.ajax({
-			url: 'game/game_is_finished',
+			url: '/game/game_is_finished',
 			dataType: 'json',
 			success: function(data) {
 				

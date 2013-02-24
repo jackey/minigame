@@ -18,6 +18,31 @@ class Game extends CI_Controller {
 		$this->load->view('welcome_message');
 	}
 
+	public function restart_game() {
+		//先判断登陆情况
+		if (is_login($this->session)) {
+			$data = array(
+				'success' => 0,
+				'message' => '',
+				'data' => array(),
+			);
+			$user = current_user($this->session);
+			$game = load_user_game($this->db, $user);
+			if ($game) {
+				//删除之前的游戏，然后再开启一个新的游戏
+				helper_user_delete_game($this->db, $game->gid);
+			}
+
+			$game = helper_start_game($this->db, $user);
+			$data['data'] = $game;
+			$data['success'] = 1;
+
+			//更新游戏访问时间
+			helper_update_game_access_time($this->db, $game->gid);
+			$this->output->set_output(json_encode($data));
+		}
+	}
+
 	public function start_game() {
 		$data = array(
 			'success' => 0,
