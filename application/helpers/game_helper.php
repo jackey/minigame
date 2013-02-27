@@ -70,11 +70,28 @@ if (!function_exists('helper_update_game_access_time')) {
 if (!function_exists('helper_generate_game_map')) {
 	function helper_generate_game_map() {
 		$drips = array();
-		while (count($drips) < 11) {
-			$drip = array('pos' => rand(1, 20), 'status' => 0);
-			$drips[$drip['pos']] = $drip;
+		// while (count($drips) < 11) {
+		// 	$drip = array('pos' => rand(1, 20), 'status' => 0);
+		// 	$drips[$drip['pos']] = $drip;
+		// }
+		// $drips = array_values($drips);
+
+		// 1-4 -> 2
+		for($i = 1; $ <3; $++) {
+			$drips[] = array('pos' => rand(1, 4), 'status' => 0);
 		}
-		$drips = array_values($drips);
+		//5-9 -> 3
+		for ($i = 1; $i < 4; $i++) {
+			$drips[] = array('pos' => rand(5,9), 'status' => 0);
+		}
+		//10-15 -> 4
+		for ($i = 1; $i < 5; $i++) {
+			$drips[] = array('pos' => rand(10,15), 'status' => 0);
+		}
+		//15-20 -> 3
+		for ($i = 1; $i < 4; $i++) {
+			$drips[] = array('pos' => rand(15,20), 'status' => 0);
+		}
 
 		return $drips;
 	}
