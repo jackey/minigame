@@ -71,46 +71,50 @@ if (!function_exists('helper_generate_game_map')) {
 	function helper_generate_game_map() {
 		$drips = array();
 		$randed_number = array();
-		// while (count($drips) < 11) {
-		// 	$drip = array('pos' => rand(1, 20), 'status' => 0);
-		// 	$drips[$drip['pos']] = $drip;
-		// }
-		// $drips = array_values($drips);
 
 		// 1-4 -> 2
-		for($i = 1; $ <3; $++) {
-			$pos = rand(1, 4);
-			while (!isset($randed_number[$pos])) {
+		for($i = 1; $i <3; $i++) {
+			while (TRUE) {
 				$pos = rand(1,4);
+				if (!isset($randed_number[$pos])) {
+					$randed_number[$pos] = $pos;
+					break;
+				}
 			}
 			$randed_number[$pos] = $pos;
 			$drips[] = array('pos' => $pos, 'status' => 0);
 		}
 		//5-9 -> 3
 		for ($i = 1; $i < 4; $i++) {
-			$pos = rand(5,9);
-			while (!isset($randed_number[$pos])) {
+			while (TRUE) {
 				$pos = rand(5,9);
+				if (!isset($randed_number[$pos])) {
+					$randed_number[$pos] = $pos;
+					break;
+				}
 			}
-			$randed_number[$pos] = $pos;
 			$drips[] = array('pos' => $pos, 'status' => 0);
 		}
 		//10-15 -> 4
 		for ($i = 1; $i < 5; $i++) {
-			$pos = rand(10,15);
-			while (!isset($randed_number[$pos])) {
+			while (TRUE) {
 				$pos = rand(10,15);
+				if (!isset($randed_number[$pos])) {
+					$randed_number[$pos] = $pos;
+					break;
+				}
 			}
-			$randed_number[$pos] = $pos;
 			$drips[] = array('pos' => $pos, 'status' => 0);
 		}
 		//16-20 -> 3
 		for ($i = 1; $i < 4; $i++) {
-			$pos = rand(16,20);
-			while (!isset($randed_number[$pos])) {
+			while (TRUE) {
 				$pos = rand(16,20);
+				if (!isset($randed_number[$pos])) {
+					$randed_number[$pos] = $pos;
+					break;
+				}
 			}
-			$randed_number[$pos] = $pos;
 			$drips[] = array('pos' => $pos, 'status' => 0);
 		}
 
