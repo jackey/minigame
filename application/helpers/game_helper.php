@@ -90,7 +90,7 @@ if (!function_exists('helper_generate_game_map')) {
 		}
 		//15-20 -> 3
 		for ($i = 1; $i < 4; $i++) {
-			$drips[] = array('pos' => rand(15,20), 'status' => 0);
+			$drips[] = array('pos' => rand(16,20), 'status' => 0);
 		}
 
 		return $drips;
